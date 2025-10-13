@@ -233,8 +233,8 @@ internal static class ItemManager
         behavior.Name = itemData.Name;
         behavior.KeepOnDeath = itemData.KeepOnDeath;
         behavior.ItemRender = render;
-        behavior.EquipSound = itemData.GetPickupAudio();
-        behavior.DropSound = itemData.GetEquipAudio();
+        behavior.EquipSound = itemData.GetEquipAudio();
+        behavior.DropSound = itemData.GetDropAudio();
         behavior.AddColliderToPrefab(prefab);
         behavior.OnPrefabCreatedAutomatically(behavior.gameObject);
         return behavior;

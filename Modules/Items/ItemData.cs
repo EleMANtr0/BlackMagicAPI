@@ -102,22 +102,22 @@ public abstract class ItemData : ICompatibility
     }
 
     /// <summary>
-    /// Loads the pickup sound effect for this item from the plugin's resources.
+    /// Loads the drop sound effect for this item from the plugin's resources.
     /// </summary>
     /// <returns>
-    /// The custom pickup sound if found in the plugin's Sounds directory,
+    /// The custom drop sound if found in the plugin's Sounds directory,
     /// otherwise null if no sound file exists or no plugin is associated.
     /// </returns>
     /// <remarks>
-    /// Looks for a WAV file named "{ItemName}_Pickup.wav" in the plugin's Sounds folder.
+    /// Looks for a WAV file named "{ItemName}_Drop.wav" in the plugin's Sounds folder.
     /// Removes spaces from the item name when constructing the filename.
     /// </remarks>
-    public virtual AudioClip? GetPickupAudio()
+    public virtual AudioClip? GetDropAudio()
     {
         if (Plugin == null) return null;
 
         string pluginPath = Path.GetDirectoryName(Plugin.Info.Location);
-        string soundPath = Path.Combine(pluginPath, "Sounds", $"{Name.Replace(" ", "")}_Pickup.wav");
+        string soundPath = Path.Combine(pluginPath, "Sounds", $"{Name.Replace(" ", "")}_Drop.wav");
         if (File.Exists(soundPath))
         {
             return Utils.LoadWavFromDisk(soundPath);
