@@ -8,10 +8,14 @@
 		<langVersion>preview</langVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Version>3.0.0.0</Version>
+		<!-- Bind against the game's own BCL (mscorlib/netstandard from References) instead of the
+		     SDK's .NET Framework reference assemblies, which lack netstandard2.1 types like
+		     System.Diagnostics.CodeAnalysis.AllowNullAttribute that the game runtime provides. -->
+		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="References\*.dll" />
+		<Reference Include="References\*.dll" Exclude="References\Assembly-CSharp.dll;References\BepInEx.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,8 +39,13 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<!-- Deploy target: copies the freshly built plugin into the workspace staging folder. -->
+	<PropertyGroup>
+		<BMADeployDir>/home/elemantro/.config/r2modmanPlus-local/MageArena/profiles/Default/BepInEx/plugins/D1GQ-BlackMagicAPI/BlackMagicAPI</BMADeployDir>
+	</PropertyGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="copy &quot;$(TargetDir)BlackMagicAPI.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mage Arena\Modded\BepInEx\plugins\BlackMagicAPI&quot;" />
-		<Exec Command="copy &quot;$(TargetDir)BlackMagicAPI.xml&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mage Arena\Modded\BepInEx\plugins\BlackMagicAPI&quot;" />
+		<MakeDir Directories="$(BMADeployDir)" />
+		<Copy SourceFiles="$(TargetDir)BlackMagicAPI.dll" DestinationFolder="$(BMADeployDir)" />
+		<Copy SourceFiles="$(TargetDir)BlackMagicAPI.xml" DestinationFolder="$(BMADeployDir)" Condition="Exists('$(TargetDir)BlackMagicAPI.xml')" />
 	</Target>
 </Project>

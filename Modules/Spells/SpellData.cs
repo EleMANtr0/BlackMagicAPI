@@ -105,6 +105,21 @@ public abstract class SpellData : ICompatibility
     /// </remarks>
     public int Id { get; internal set; }
 
+    // ---- Legacy (BlackMagicAPI 1.x) compatibility members ----
+    // Spells compiled against BMA 1.x override these properties. They were removed in 3.x, which made
+    // those spell types fail to load (ReflectionTypeLoadException) and silently disappear. Re-declaring
+    // them as virtuals lets the old overrides bind so the types load again. Current (3.x) spells use
+    // GetMainTexture/GetEmissionTexture instead and never touch these, so the defaults are harmless.
+
+    /// <summary>Legacy 1.x hook for the main texture's PNG name. Unused by current spells.</summary>
+    public virtual string MainPngName => $"{Name.Replace(" ", "")}_Main";
+
+    /// <summary>Legacy 1.x hook for the emission texture's PNG name. Unused by current spells.</summary>
+    public virtual string EmissionPngName => $"{Name.Replace(" ", "")}_Emission";
+
+    /// <summary>Legacy 1.x short identifier hook. Unused by current spells.</summary>
+    public virtual string ShortId => Name;
+
     /// <summary>
     /// The plugin that adds the spell.
     /// </summary>

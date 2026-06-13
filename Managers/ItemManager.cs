@@ -184,9 +184,10 @@ internal static class ItemManager
                 ModSyncManager.FailedItems.Add((baseUnity, ItemDataType));
                 return;
             case CompatibilityResult.OldVersion:
-                BMAPlugin.Log.LogError($"Failed to register item from {baseUnity.Info.Metadata.Name}: {ItemDataType.Name} Is incompatible with BlackMagicAPI v{ModMetaData.VERSION}!");
-                ModSyncManager.FailedItems.Add((baseUnity, ItemDataType));
-                return;
+                // See SpellManager: type loaded and constructed fine, so it is binary-compatible.
+                // Warn-and-register instead of hard-failing on a strict version-equality mismatch.
+                BMAPlugin.Log.LogWarning($"Registering item from {baseUnity.Info.Metadata.Name}: {ItemDataType.Name} was built against a different BlackMagicAPI version (v{ModMetaData.VERSION} installed). Loading anyway; report issues to the item's author if it misbehaves.");
+                break;
             case CompatibilityResult.Error:
                 BMAPlugin.Log.LogError($"Failed to register item from {baseUnity.Info.Metadata.Name}: An error occurred when trying to get Compatibility Version from {ItemDataType.Name}!");
                 ModSyncManager.FailedItems.Add((baseUnity, ItemDataType));

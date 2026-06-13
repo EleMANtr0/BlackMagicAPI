@@ -38,10 +38,36 @@ public class BMAPlugin : BaseUnityPlugin
         _log = Logger;
         Instance = this;
         Harmony = new(ModMetaData.GUID);
-        Harmony.PatchAll();
+        PatchAllResilient(Harmony);
         Log.LogInfo($"BlackMagicAPI v{ModMetaData.VERSION} loaded, (Compatibility -> v{CompatibilityManager.COMPATIBILITY_VERSION})");
         SynchronizeManager.UpdateSyncHash();
         StartCoroutine(CoWaitForChainloaderToLog());
+    }
+
+    /// <summary>
+    /// Applies every Harmony patch class in this assembly individually so that a single
+    /// patch whose target game method was removed/renamed by an update (e.g. a deleted
+    /// PaperInteract.Start) only disables that one feature instead of aborting the whole
+    /// plugin load. The original Harmony.PatchAll() is all-or-nothing and throws on the
+    /// first undefined target method.
+    /// </summary>
+    private static void PatchAllResilient(Harmony harmony)
+    {
+        var assembly = typeof(BMAPlugin).Assembly;
+        foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
+        {
+            try
+            {
+                harmony.CreateClassProcessor(type).Patch();
+            }
+            catch (System.Exception ex)
+            {
+                Log.LogWarning(
+                    $"Skipping patch class '{type.FullName}' - its target game method is missing " +
+                    $"(likely changed by a game update). This feature is disabled but the mod will " +
+                    $"continue loading. Details: {ex.Message}");
+            }
+        }
     }
 
     private IEnumerator CoWaitForChainloaderToLog()

@@ -95,9 +95,13 @@ internal static class SpellManager
                 ModSyncManager.FailedSpells.Add((baseUnity, SpellDataType));
                 return;
             case CompatibilityResult.OldVersion:
-                BMAPlugin.Log.LogError($"Failed to register spell from {baseUnity.Info.Metadata.Name}: {SpellDataType.Name} Is incompatible with BlackMagicAPI v{ModMetaData.VERSION}!");
-                ModSyncManager.FailedSpells.Add((baseUnity, SpellDataType));
-                return;
+                // Built against a different BlackMagicAPI version, but the type loaded and
+                // constructed successfully (otherwise this would be Error/NoProperty), so it is
+                // binary-compatible. Warn instead of hard-failing so spells from mods that haven't
+                // rebuilt against the current API still register. If a genuine API break exists it
+                // will surface as a runtime error from that spell, not a silent drop of all of them.
+                BMAPlugin.Log.LogWarning($"Registering spell from {baseUnity.Info.Metadata.Name}: {SpellDataType.Name} was built against a different BlackMagicAPI version (v{ModMetaData.VERSION} installed). Loading anyway; report issues to the spell's author if it misbehaves.");
+                break;
             case CompatibilityResult.Error:
                 BMAPlugin.Log.LogError($"Failed to register spell from {baseUnity.Info.Metadata.Name}: An error occurred when trying to get Compatibility Version from {SpellDataType.Name}!");
                 ModSyncManager.FailedSpells.Add((baseUnity, SpellDataType));

@@ -128,7 +128,7 @@ internal class PageControllerPatch
                 spell.SyncData(dataWriter.GetObjectBuffer());
                 dataWriter.Dispose();
 
-                bool cooldown = spell.CastSpell(ownerobj.GetComponent<PlayerMovement>(), __instance, spawnpos, fwdVector, level);
+                bool cooldown = spell.InvokeCastSpell(ownerobj.GetComponent<PlayerMovement>(), __instance, spawnpos, fwdVector, level);
                 if (!cooldown)
                 {
                     __instance.ReinstatePageEmis();

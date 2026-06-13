@@ -13,7 +13,9 @@ internal class SoupManPatch
     {
         private static readonly ConditionalWeakTable<SoupManController, List<int>> usedIds = [];
 
-        [HarmonyPatch(nameof(SoupManController.Start))]
+        // Game update renamed SoupManController.Start -> Awake; retarget so custom soup
+        // registration still runs at controller initialization.
+        [HarmonyPatch(nameof(SoupManController.Awake))]
         [HarmonyPostfix]
         [HarmonyPriority(Priority.First)]
         private static void Start_Postfix(SoupManController __instance)
